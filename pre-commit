@@ -53,7 +53,6 @@ do
     ((match++))
 done
 
-email_match=0
 for i in "${!email_patterns[@]}"
 do
     git diff-index -p -M --cached HEAD -- | grep -v "snyk/snyk@"| grep -v "create-release@latest"| grep -v "checkout@master"| grep -v "Publish-Docker-Github-Action@master"| grep -v "docker@master"|
@@ -62,10 +61,9 @@ do
     echo "This part of your change triggered this issue:" &&
     git diff-index -p -M --cached HEAD -- | grep -v "snyk/snyk@"| grep -v "create-release@latest"| grep -v "checkout@master"| grep -v "Publish-Docker-Github-Action@master"| grep -v "docker@master"|
     grep '^+[^+]' | grep -E "${email_patterns[$i]}" &&
-    ((email_match++))
+    ((match++))
 done
 
-ip_match=0
 for i in "${!ip_patterns[@]}"
 do
     git diff-index -p -M --cached HEAD -- | grep -v "169.254.169.254" | grep -v "0.0.0.0" | grep -v "127.0.0.1" |
@@ -74,10 +72,10 @@ do
     echo "This part of your change triggered this issue:" &&
     git diff-index -p -M --cached HEAD -- | grep -v "169.254.169.254" | grep -v "0.0.0.0" | grep -v "127.0.0.1" |
     grep '^+[^+]' | grep -E "${ip_patterns[$i]}" &&
-    ((ip_match++))
+    ((match++))
 done
 
-if (( match > 0 | email_match > 0 | ip_match > 0)); then
+if (( match > 0 )); then
     echo "If the above are false positives then you can use the --no-verify flag to skip checks"
     echo "git commit --no-verify"
     exit 1
