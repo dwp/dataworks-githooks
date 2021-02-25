@@ -36,6 +36,28 @@ declare -a ip_descriptions=(
     "IP address"
 )
 
+declare -a allowed_tags=(
+    "@given"
+    "@when"
+    "@then"
+    "@fixture"
+    "@analytical-dataset-generation"
+    "@analytical"
+    "@data-load"
+    "@corporate-data-load"
+    "@data-egress-s3"
+    "@data-export"
+    "@end-to-end"
+    "@data-import"
+    "@data-load"
+    "@historic-data-load"
+    "@aws-pdm-dataset-generation"
+    "@data-egress"
+    "@data-streaming"
+    "@synthetic-data-ingestion"
+    "@ucfs-claimant-api"
+)
+
 if [ -d ".gitsecret" ]; then
     git secret hide
 fi
@@ -44,11 +66,11 @@ fi
 match=0
 for i in "${!patterns[@]}"
 do
-    git diff-index -p -M --cached HEAD -- | grep -v "Subproject commit" |
+    git diff-index -p -M --cached HEAD -- | grep -v "Subproject commit" | grep -v "mxfile host" |
     grep '^+[^+]' | grep -Eq "${patterns[$i]}" &&
     echo "Blocking commit: ${descriptions[$i]} detected in patch" &&
     echo "This part of your change triggered this issue:" &&
-    git diff-index -p -M --cached HEAD -- | grep -v "Subproject commit" |
+    git diff-index -p -M --cached HEAD -- | grep -v "Subproject commit" | grep -v "mxfile host" |
     grep '^+[^+]' | grep -E "${patterns[$i]}" &&
     ((match++))
 done
@@ -56,11 +78,11 @@ done
 for i in "${!email_patterns[@]}"
 do
     git diff-index -p -M --cached HEAD -- | grep -v "snyk/snyk@"| grep -v "create-release@latest"| grep -v "checkout@master"| grep -v "Publish-Docker-Github-Action@master"| grep -v "docker@master"|
-    grep '^+[^+]' | grep -Eq "${email_patterns[$i]}" &&
+    grep -Eq -v "${allowed_tags[$i]}" | grep '^+[^+]' | grep -Eq "${email_patterns[$i]}" &&
     echo "Blocking commit: ${email_descriptions[$i]} detected in patch" &&
     echo "This part of your change triggered this issue:" &&
     git diff-index -p -M --cached HEAD -- | grep -v "snyk/snyk@"| grep -v "create-release@latest"| grep -v "checkout@master"| grep -v "Publish-Docker-Github-Action@master"| grep -v "docker@master"|
-    grep '^+[^+]' | grep -E "${email_patterns[$i]}" &&
+    grep -Eq -v "${allowed_tags[$i]}" | grep '^+[^+]' | grep -E "${email_patterns[$i]}" &&
     ((match++))
 done
 
