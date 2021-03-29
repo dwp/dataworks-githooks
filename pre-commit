@@ -8,6 +8,7 @@ declare -a patterns=(
     "\b[A-Z]{2}[0-9]{6}[A-Z]{1}\b"
     "PRIVATE KEY-----"
     "\b.[a-z]{2}-[a-z]{4,9}-[0-9]{1}.\b"
+    "dwpcloud\.uk"
 )
 
 declare -a descriptions=(
@@ -18,6 +19,7 @@ declare -a descriptions=(
     "NINO"
     "Private key (e.g. rsa private key, openssh private key)"
     "Regions embedded as part of resource descriptions"
+    "Internal dwpcloud.uk address"
 )
 
 declare -a email_patterns=(
